@@ -951,6 +951,28 @@ bool toggle_voice(EKeystate s)
     return true;
 }
 
+// mb: this entire function is for the keybind to toggle voice location. Search elsewhere for 'hearfrom'
+bool handleVoiceClientPrefsChanged(const LLSD& newvalue);
+bool toggle_hearfrom(EKeystate s)
+{
+    if (KEYSTATE_DOWN != s) return true;
+
+    // toggle the hearfrom location
+    // TODO: is this good for both voice systems?
+    LLSD dummy;
+
+    S32 earLoc = gSavedSettings.getS32("VoiceEarLocation");
+    if (earLoc) {
+        earLoc = 0;
+    } else {
+        earLoc = 1;
+    }
+    gSavedSettings.setS32("VoiceEarLocation", earLoc);
+    handleVoiceClientPrefsChanged(dummy);   // input arg is not used
+
+    return true;
+}
+
 bool voice_follow_key(EKeystate s)
 {
     if (KEYSTATE_DOWN == s)
@@ -1084,6 +1106,7 @@ REGISTER_KEYBOARD_ACTION("toggle_enable_media", toggle_enable_media);
 REGISTER_KEYBOARD_ACTION("teleport_to", teleport_to);
 REGISTER_KEYBOARD_ACTION("walk_to", walk_to);
 REGISTER_KEYBOARD_GLOBAL_ACTION("toggle_voice", toggle_voice);
+REGISTER_KEYBOARD_GLOBAL_ACTION("toggle_hearfrom", toggle_hearfrom);
 REGISTER_KEYBOARD_GLOBAL_ACTION("voice_follow_key", voice_follow_key);
 REGISTER_KEYBOARD_ACTION(script_mouse_handler_name, script_trigger_lbutton);
 #undef REGISTER_KEYBOARD_ACTION

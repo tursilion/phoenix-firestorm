@@ -15,7 +15,10 @@
 	<rows name="toggle_voice">
 		<columns name="lst_action" value="Səsi dəyişdir"/>
 	</rows>
-	<rows name="start_chat">
+    <rows name="toggle_hearfrom">
+        <columns name="lst_action" value="Səsi hearfrom"/>
+    </rows>
+    <rows name="start_chat">
 		<columns name="lst_action" value="Çatı başlat"/>
 	</rows>
 	<rows name="start_gesture">

@@ -22,8 +22,9 @@
     <binding key="DIVIDE" mask="NONE" command="start_gesture"/>
 
     <binding key="" mask="NONE" mouse="MMB" command="toggle_voice"/>
+    <binding key="" mask="NONE" command="toggle_hearfrom"/>
 
-    <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
+      <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
   </first_person>
   <third_person>
     <binding key="A" mask="NONE" command="turn_left"/>
@@ -89,8 +90,9 @@
     <binding key="DOWN" mask="CTL_ALT_SHIFT" command="pan_down"/>
 
     <binding key="" mask="NONE" mouse="MMB" command="toggle_voice"/>
+    <binding key="" mask="NONE" command="toggle_hearfrom"/>
 
-    <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
+      <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
   </third_person>
   <sitting>
     <binding key="A" mask="ALT" command="spin_around_cw"/>
@@ -167,8 +169,9 @@
     <binding key="DIVIDE" mask="NONE" command="start_gesture"/>
 
     <binding key="" mask="NONE" mouse="MMB" command="toggle_voice"/>
+      <binding key="" mask="NONE" command="toggle_hearfrom"/>
 
-    <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
+      <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
   </sitting>
   <edit_avatar>
     <!--Avatar editing camera controls-->
@@ -188,7 +191,8 @@
     <binding key="DIVIDE" mask="NONE" command="start_gesture"/>
 
     <binding key="" mask="NONE" mouse="MMB" command="toggle_voice"/>
+      <binding key="" mask="NONE" command="toggle_hearfrom"/>
 
-    <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
+      <binding key="" mask="NONE" mouse="LMB" command="script_trigger_lbutton"/>
   </edit_avatar>
 </keys>

@@ -54,6 +54,16 @@
          value="Toggle Voice" />
     </rows>
     <rows
+     name="toggle_hearfrom"
+     value="toggle_hearfrom">
+        <columns
+         column="lst_action"
+         font="SansSerif"
+         halign="left"
+         name="lst_action"
+         value="Toggle Hearfrom" />
+    </rows>
+    <rows
      name="start_chat"
      value="start_chat">
         <columns

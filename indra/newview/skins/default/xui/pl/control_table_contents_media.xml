@@ -15,7 +15,10 @@
 	<rows name="toggle_voice">
 		<columns name="lst_action" value="Przełącz głos" />
 	</rows>
-	<rows name="start_chat">
+    <rows name="toggle_hearfrom">
+        <columns name="lst_action" value="Przełącz hearfrom" />
+    </rows>
+    <rows name="start_chat">
 		<columns name="lst_action" value="Rozpocznij czat" />
 	</rows>
 	<rows name="start_gesture">
