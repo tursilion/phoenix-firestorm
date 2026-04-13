@@ -101,6 +101,14 @@ struct SortItemPtrsByName
         return (LLStringUtil::compareDict(i1->getName(), i2->getName()) < 0);
     }
 };
+// mb: removing duplicates from the list
+struct CompareItemPtrsByName
+{
+    bool operator()(const LLInventoryItem* i1, const LLInventoryItem* i2)
+    {
+        return (LLStringUtil::compareDict(i1->getName(), i2->getName()) == 0);
+    }
+};
 
 // static
 LLPreviewGesture* LLPreviewGesture::show(const LLUUID& item_id, const LLUUID& object_id)
@@ -321,6 +329,7 @@ LLPreviewGesture::LLPreviewGesture(const LLSD& key)
     mChatEditor(NULL),
     mSaveBtn(NULL),
     mPreviewBtn(NULL),
+    mClearHotkeyBtn(NULL),
     mPreviewGesture(NULL),
     mDirty(false)
 {
@@ -480,6 +489,10 @@ bool LLPreviewGesture::postBuild()
     btn->setClickedCallback(onClickPreview, this);
     mPreviewBtn = btn;
 
+    // mb: clear hotkeys
+    btn = getChild<LLButton>( "clearhotkey_btn");
+    btn->setClickedCallback(onClickClearHotkey, this);
+    mClearHotkeyBtn = btn;
 
     // Populate the comboboxes
     addModifiers();
@@ -514,8 +527,28 @@ void LLPreviewGesture::addKeys()
     LLComboBox* combo = mKeyCombo;
 
     combo->add( NONE_LABEL );
+
+    // mb: add F1-F12 first
+    for (KEY key = KEY_F1; key <= KEY_F12; key++)
+    {
+        char buffer[] = {(char)key, '\0'}; // <FS:ND/> Added (char) for proper array initialization
+        std::string str_org(buffer);
+        std::string str_translated = LLKeyboard::stringFromKey(key);
+
+        if (str_org == str_translated)
+        {
+            if (key >= ' ' && key <= '~') combo->add( str_translated, ADD_BOTTOM );
+        }
+        else combo->add( str_translated, ADD_BOTTOM );
+    }
+
+    // mb: now add the others, but skip F1-F12
     for (KEY key = ' '; key < KEY_NONE; key++)
     {
+        if ((key >= KEY_F1) && (key <= KEY_F12)) {
+            continue;
+        }
+
         char buffer[] = {(char)key, '\0'}; // <FS:ND/> Added (char) for proper array initialization
         std::string str_org(buffer);
         std::string str_translated = LLKeyboard::stringFromKey(key);
@@ -619,6 +652,12 @@ void LLPreviewGesture::addSounds()
 
     // Do the sort
     std::sort(sounds.begin(), sounds.end(), SortItemPtrsByName());
+    
+    // mb: remove duplicates
+    {
+        auto it = unique(sounds.begin(), sounds.end(), CompareItemPtrsByName());
+        sounds.erase(it, sounds.end());
+    }
 
     // And load up the combobox
     std::vector<LLInventoryItem*>::iterator it;
@@ -709,6 +748,7 @@ void LLPreviewGesture::refresh()
 
     mModifierCombo->setEnabled(true);
     mKeyCombo->setEnabled(true);
+    mClearHotkeyBtn->setEnabled(true);
 
     mAddBtn->setEnabled(modifiable && have_library);
     mUpBtn->setEnabled(modifiable && have_step && step_index > 0);
@@ -1825,6 +1865,28 @@ void LLPreviewGesture::onClickPreview(void* data)
 
         self->refresh();
     }
+}
+
+// static
+// mb: zero out the hotkeys with a single click
+void LLPreviewGesture::onClickClearHotkey(void* data)
+{
+    if (!data) return;
+    if (!are_gestures_enabled()) return; // <FS:PP> FIRE-36169 Gestures enable/disable switch
+
+    LLPreviewGesture* self = (LLPreviewGesture*)data;
+
+    LLComboBox* combo = self->mModifierCombo;
+    if (combo) {
+        combo->setCurrentByIndex(0);
+    }
+
+    combo = self->mKeyCombo;
+    if (combo) {
+        combo->setCurrentByIndex(0);
+    }
+
+    self->onCommitKeyorModifier();
 }
 
 

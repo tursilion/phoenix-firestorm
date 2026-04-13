@@ -70,5 +70,6 @@
 	</text>
 	<check_box label="Disponible" name="active_check" tool_tip="Los gestos disponibles pueden realizarse escribiendo en el chat su frase clave o pulsando su tecla de acceso rápido. Generalmente, los gestos pasan a no disponibles cuando hay un conflicto de teclas."/>
 	<button label="Vista previa" name="preview_btn" width="82"/>
-	<button label="Guardar" name="save_btn"/>
+    <button label="ClearHotkey" name="clearhotkey_btn"/>
+    <button label="Guardar" name="save_btn"/>
 </floater>

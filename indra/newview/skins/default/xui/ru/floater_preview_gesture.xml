@@ -70,5 +70,6 @@
 	</text>
 	<check_box label="Активный" name="active_check" tool_tip="Активные жесты можно включить путем ввода их триггеров в чат или нажатием горячих клавиш.  Жесты обычно становятся неактивными, если возникает конфликт клавиш."/>
 	<button label="Просмотр" name="preview_btn"/>
-	<button label="Сохранить" name="save_btn"/>
+    <button label="ClearHotkey" name="clearhotkey_btn"/>
+    <button label="Сохранить" name="save_btn"/>
 </floater>

@@ -93,6 +93,7 @@ private:
     void onActivateBtnClick();
     void onClickEdit();
     void onClickPlay();
+    void onClickRight();
     void onClickNew();
     void onCommitList();
     void onCopyPasteAction(const LLSD& command);

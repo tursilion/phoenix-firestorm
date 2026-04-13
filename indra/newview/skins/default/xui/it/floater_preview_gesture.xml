@@ -63,5 +63,6 @@
 	</text>
 	<check_box label="Attiva" name="active_check" tool_tip="I gesti attivati possono essere eseguite scrivendo in chat la parola chiave o premendo i tasti chiave. I gesti generalmente si disattivano quando c&apos;è un conflitto nei relativi tasti."/>
 	<button label="Anteprima" name="preview_btn"/>
-	<button label="Salva" name="save_btn"/>
+    <button label="ClearHotkey" name="clearhotkey_btn"/>
+    <button label="Salva" name="save_btn"/>
 </floater>

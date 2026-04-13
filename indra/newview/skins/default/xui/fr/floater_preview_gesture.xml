@@ -32,5 +32,6 @@
 	<text name="help_label">Toutes les étapes se produisent simultanément, sauf si vous insérez des pauses.</text>
 	<check_box label="Actif" name="active_check" tool_tip="Les gestes peuvent être déclenchés par le chat par un mot déclencheur ou en appuyant sur une touches de raccourci. Les gestes deviennent habituellement inactifs quand il y a un conflit de liaison de mot clé."/>
 	<button label="Aperçu" name="preview_btn"/>
-	<button label="Enregistrer" name="save_btn"/>
+    <button label="ClearHotkey" name="clearhotkey_btn"/>
+    <button label="Enregistrer" name="save_btn"/>
 </floater>

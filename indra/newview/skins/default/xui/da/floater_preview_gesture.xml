@@ -69,5 +69,6 @@
 	</text>
 	<check_box label="Aktiv" name="active_check" tool_tip="Aktive bevægelser kan blive aktiveret ved at skrive deress udløser tekst eller ved at trykke på genvejstaste. Bevægelser vil normalt være inaktive hvis der allerede findes en tilsvarende genvejstaste."/>
 	<button label="Vis" name="preview_btn"/>
-	<button label="Gem" name="save_btn"/>
+    <button label="ClearHotkey" name="clearhotkey_btn"/>
+    <button label="Gem" name="save_btn"/>
 </floater>

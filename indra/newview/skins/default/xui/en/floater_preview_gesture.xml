@@ -124,6 +124,14 @@
      width="130">
         Shortcut Key:
     </text>
+    <button
+     follows="top|left"
+     height="15"
+     label="ClearHotkey"
+     layout="topleft"
+     left="10"
+     name="clearhotkey_btn"
+     width="130" />
     <combo_box
      height="20"
      label="None"

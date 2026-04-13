@@ -129,6 +129,7 @@ protected:
     static void onCommitActive(LLUICtrl* ctrl, void* data);
     static void onClickSave(void* data);
     static void onClickPreview(void* data);
+    static void onClickClearHotkey(void* data);
 
     static void onDonePreview(LLMultiGesture* gesture, void* data);
 
@@ -162,6 +163,7 @@ private:
     LLCheckBoxCtrl*     mActiveCheck;
     LLButton*           mSaveBtn;
     LLButton*           mPreviewBtn;
+    LLButton*           mClearHotkeyBtn;    // mb: clear hotkeys
 
     LLMultiGesture*     mPreviewGesture;
     bool mDirty;

@@ -69,5 +69,6 @@
 	</text>
 	<check_box label="Aktiv" name="active_check" tool_tip="Aktiv jestləri söhbətə onların tətiklərini yazmaqla və ya isti düymələrə basmaqla aktivləşdirmək olar.  Düymələr münaqişəsi baş verərsə, jestlər adətən qeyri-aktiv olur."/>
 	<button label="Önbaxış" name="preview_btn"/>
-	<button label="Yadda saxla" name="save_btn"/>
+    <button label="ClearHotkey" name="clearhotkey_btn"/>
+    <button label="Yadda saxla" name="save_btn"/>
 </floater>
