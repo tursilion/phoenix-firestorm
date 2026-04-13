@@ -1282,7 +1282,13 @@ bool LLKeyframeMotion::deserialize(LLDataPacker& dp, const LLUUID& asset_id, boo
                    << " for animation " << asset() << LL_ENDL;
         return false;
     }
+    // mb: TODO: changing 'temp_priority' seems to override the loaded priority like I want,
+    // but I don't know how to associate the UUID to something meaningful. Fetching the name
+    // apparently requires searching an entire inventory - can we create a text file or such?
+    // Will that affect EVERYONE playing that same animation? I think it would. Is there a
+    // way to do what I want, or do we have to patch the animation and reupload it to do it?
     joint_motion_list->mBasePriority = (LLJoint::JointPriority) temp_priority;
+    LL_WARNS() << "Got animation base priority of " << temp_priority << " for animation " << asset() << LL_ENDL;
 
     if (joint_motion_list->mBasePriority >= LLJoint::ADDITIVE_PRIORITY)
     {
