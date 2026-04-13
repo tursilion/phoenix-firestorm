@@ -105,6 +105,16 @@ python --version
 pip --version
 ```
 
+NOTE: you need to add the visual studio path before cygwin (for cmake msvc version) - my working path was: 
+
+```
+path=c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;d:\cygwin64\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Users\tursilion\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts;C:\Users\tursilion\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Git\cmd
+```
+
+Your path will differ.
+
+Even if you have a valid cmake, if it is the cygwin one from some random folder, it may or may not function.
+
 If they all report sensible values and not "Command not found" errors, then you are in good shape.
 
 ### Optional: Set up a Python virtual environment
@@ -177,7 +187,9 @@ Most third party libraries needed to build the viewer will be automatically down
 If you want to use FMOD Studio to play sounds within the viewer, you will have to download your own copy. FMOD Studio can be downloaded [here](https://www.fmod.com) (requires creating an account to access the download section).
 
 > [!IMPORTANT]
-> Make sure to download the FMOD Studio API and not the FMOD Studio Tool!
+> Make sure to download the FMOD Studio API (FMOD Engine - v 2.02 required!) and not the FMOD Studio Tool!
+> Remember to put the INSTALLER into the 3p-fmodstudio folder created in the next step, don't run it!
+> I can't provide the installer unfortunately.
 
 ```
 c:
@@ -203,6 +215,13 @@ autobuild package -A 64 --results-file result.txt
 ```
 
 While running the Autobuild build command, Windows might ask if you want to allow making changes to the computer. This is because of the FMOD Studio installer being executed. Allow these changes to be made.
+
+But more likely, the first autobuild will dump you into a command prompt because of changes to how programs execute. If that happens (ie: you see "Microsoft Windows [Version..." etc):
+
+- you can see the cmd.exe line it tried to run above, go ahead and run that command manually (skipping the cmd.exe /c part and the quotes)
+- wait for the GUI installer to finish - it is slow to start up. It will create the fmodstudio... folder for you
+- type 'exit' to exit the secondary cmd prompt and continue the autobuild
+- when done, remember to run the second autobuild command
 
 Near the end of the output you will see the package name written:
 
@@ -242,10 +261,23 @@ Then enter:
 ```
 c:
 cd \firestorm\phoenix-firestorm
-autobuild configure -A 64 -c ReleaseFS_open
+autobuild configure -A 64 -c ReleaseFS_open -- --fmodstudio --chan slpw -DLL_TESTS:BOOL=FALSE
 ```
 
-This will configure Firestorm to be built with all defaults and without third party libraries.
+This will configure Firestorm to be built with all defaults and without third party libraries except fmod.
+
+You can add the installer with --package after fmodstudio.
+
+You may see the error "Could not create named generator Visual Studio 17 2022"... 
+
+- you will need cygwin as above
+- you need to add the visual studio path before cygwin (for cmake msvc version) - my working path was: 
+
+```
+path=c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;d:\cygwin64\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Users\tursilion\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts;C:\Users\tursilion\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Git\cmd
+```
+
+Your path will differ.
 
 Available premade firestorm-specific build targets:
 
