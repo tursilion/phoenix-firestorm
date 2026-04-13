@@ -40,7 +40,7 @@ const S32 RLV_VERSION_MINOR_COMPAT = 9;
 const S32 RLV_VERSION_PATCH_COMPAT = 28;
 const S32 RLV_VERSION_BUILD_COMPAT = 0;
 
-// Implementation version
+// Implementation version - mb - should we change this?
 const S32 RLVa_VERSION_MAJOR = 2;
 const S32 RLVa_VERSION_MINOR = 4;
 const S32 RLVa_VERSION_PATCH = 2;
@@ -258,6 +258,9 @@ enum ERlvBehaviour {
     RLV_BHVR_SETOVERLAY,            // Gives an object exclusive control of the overlay
     RLV_BHVR_SETOVERLAY_TOUCH,      // Determines whether the overlay texture's alpha channel will be used to allow/block world interaction
     RLV_BHVR_SETOVERLAY_TWEEN,      // Animate between the current overlay settings and the supplied values
+
+    // extended
+    RLV_BHVR_MBGESTURE,             // mb: trigger a gesture by trigger string - @gesture=/gesture -- must start with '/'
 
     RLV_BHVR_COUNT,
     RLV_BHVR_UNKNOWN

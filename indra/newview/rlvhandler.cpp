@@ -31,6 +31,7 @@
 #include "llviewerobjectlist.h"
 #include "llviewerparcelmgr.h"
 #include "llviewerregion.h"
+#include "llgesturemgr.h"   // mb: needed to trigger gestures
 
 // Command specific includes
 #include "llagentcamera.h"              // @setcam and related
@@ -3453,6 +3454,13 @@ ERlvCmdRet RlvHandler::processReplyCommand(const RlvCommand& rlvCmd) const
     if (RLV_RET_NO_PROCESSOR != eRet)
     {
         return eRet;
+    }
+
+    // (mb: hack for gestures. TODO: how could we use the command process instead?)
+    if (rlvCmd.getBehaviourType() == RLV_BHVR_MBGESTURE) {
+        LLGestureMgr::instance().triggerAndReviseString(rlvCmd.getParam());
+        // don't break out and reply
+        return RLV_RET_SUCCESS;
     }
 
     // Sanity check - <param> should specify a - valid - reply channel

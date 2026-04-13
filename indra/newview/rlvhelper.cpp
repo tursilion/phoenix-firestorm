@@ -333,6 +333,8 @@ RlvBehaviourDictionary::RlvBehaviourDictionary()
     addEntry(new RlvBehaviourInfo("version",                RLV_BHVR_VERSION,               RLV_TYPE_REPLY));
     addEntry(new RlvBehaviourInfo("versionnew",             RLV_BHVR_VERSIONNEW,            RLV_TYPE_REPLY));
     addEntry(new RlvBehaviourInfo("versionnum",             RLV_BHVR_VERSIONNUM,            RLV_TYPE_REPLY));
+    // (mb: @gesture=/gesture)
+    addEntry(new RlvBehaviourInfo("gesture", RLV_BHVR_MBGESTURE, RLV_TYPE_REPLY));
 
     // Populate m_String2InfoMap (the tuple <behaviour, type> should be unique)
     for (const RlvBehaviourInfo* pBhvrInfo : m_BhvrInfoList)
@@ -733,6 +735,8 @@ RlvCommand::RlvCommand(const LLUUID& idObj, const std::string& strCommand)
         else if ("force" == m_strParam)
             m_eParamType = RLV_TYPE_FORCE;
         else if (LLStringUtil::convertToS32(m_strParam, nTemp)) // Assume it's a reply command if we can convert <param> to an S32
+            m_eParamType = RLV_TYPE_REPLY;
+        else if (m_strParam[0] == '/')                          // mb: also reply type if it starts with '/' for gestures
             m_eParamType = RLV_TYPE_REPLY;
         else
         {
