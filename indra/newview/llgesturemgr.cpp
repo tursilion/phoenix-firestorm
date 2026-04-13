@@ -754,6 +754,25 @@ bool LLGestureMgr::triggerAndReviseString(const std::string &utf8str, std::strin
         first_token = false;
         gesture = NULL;
     }
+
+    // ** This appears to be the one that is actually called **
+    // mb: if not a gesture, and starts with '/', just discard so it doesn't show up in chat
+    if (!found_gestures)
+    {
+        if (utf8str[0] == '/')
+        {
+            if ((utf8str[1] == 'm')&&(utf8str[2]=='e')&&(utf8str[3]==' ')) {
+                // ignore here, not a gesture
+            } else {
+                // in SLPW, this is ALWAYS a gesture (except /me), so we aren't going to return it
+                if (revised_string) {
+                    revised_string->clear();
+                }
+                found_gestures = true;
+            }
+        }
+    }
+
     return found_gestures;
 }
 

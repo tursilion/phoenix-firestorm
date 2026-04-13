@@ -253,6 +253,20 @@ bool LLGestureList::triggerAndReviseString(const std::string &string, std::strin
 
         first_token = false;
     }
+
+    // ** WARNING: I'm not sure when this one is actually called - check llgesturemgr instead **
+    // mb: if not a gesture, and starts with '/' but is not "/me", discard
+    if (!found_gestures) {
+        if (string[0] == '/') {
+            if (string.compare("/me") != 0) {
+                // in SLPW, this is ALWAYS a gesture (except "/me"), so we aren't going to return it
+                // This prevents typoed gestures from appearing in the chat output
+                revised_string->clear();
+                found_gestures = true;
+            }
+        }
+    }
+
     return found_gestures;
 }
 
