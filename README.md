@@ -9,6 +9,7 @@ Here are the current changes from the official client:
 * mute typoed gestures (/xyx) - don't echo them to local chat
 * New RLV command: @gesture=/ will run a gesture through RLV, meaning scripts (and WLV) can trigger gestures (if the gesture command starts with '/')
 * new control key "toggle hearfrom" can be bound, works with HUD down. (I use Control-Tab). This lets you toggle hear voice from avatar/camera position without needing the UI up (for streaming).
+* display hearfrom location in window title if hotkey is pressed (this lets you see it even when the hud is turned off for streaming)
 * Gesture editor has F1-F12 listed first in keys
 * Gesture editor removes duplicate sounds from sound list
 * Gesture editor adds a button to zero out the hotkeys with a click
