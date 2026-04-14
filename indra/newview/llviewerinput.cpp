@@ -953,6 +953,7 @@ bool toggle_voice(EKeystate s)
 
 // mb: this entire function is for the keybind to toggle voice location. Search elsewhere for 'hearfrom'
 bool handleVoiceClientPrefsChanged(const LLSD& newvalue);
+extern std::string gWindowTitle;
 bool toggle_hearfrom(EKeystate s)
 {
     if (KEYSTATE_DOWN != s) return true;
@@ -960,15 +961,21 @@ bool toggle_hearfrom(EKeystate s)
     // toggle the hearfrom location
     // TODO: is this good for both voice systems?
     LLSD dummy;
+    std::string newWindowTitle = gWindowTitle;  // we aren't going to overwrite the global
 
     S32 earLoc = gSavedSettings.getS32("VoiceEarLocation");
     if (earLoc) {
         earLoc = 0;
+        newWindowTitle += " > Hear from Camera";
     } else {
         earLoc = 1;
+        newWindowTitle += " > Hear from Avatar";
     }
     gSavedSettings.setS32("VoiceEarLocation", earLoc);
     handleVoiceClientPrefsChanged(dummy);   // input arg is not used
+
+    LLStringUtil::truncate(newWindowTitle, 255);
+    gViewerWindow->getWindow()->setTitle(newWindowTitle);
 
     return true;
 }
