@@ -1,3 +1,25 @@
+## NOTICE
+
+**THIS IS NOT THE OFFICIAL FIRESTORM REPOSITORY**
+
+This is a fork of Firestorm that has minor quality of life improvements - mainly aimed at the SLPW and other performance based communities. The value to you may vary.
+
+Here are the current changes from the official client:
+
+* mute typoed gestures (/xyx) - don't echo them to local chat
+* New RLV command: @gesture=/ will run a gesture through RLV, meaning scripts (and WLV) can trigger gestures (if the gesture command starts with '/')
+* new control key "toggle hearfrom" can be bound, works with HUD down. (I use Control-Tab). This lets you toggle hear voice from avatar/camera position without needing the UI up (for streaming).
+* Gesture editor has F1-F12 listed first in keys
+* Gesture editor removes duplicate sounds from sound list
+* Gesture editor adds a button to zero out the hotkeys with a click
+* Enabled UUID columns in animation explorer
+
+Each change is self-contained in its own branch, to make it easier to pull them out. However, I don't have any intention of going to the work to make properly formatted patches for upstream. If you wish to do so yourself, you have my permission (just let me know so I know to remove my code when I update).
+
+Current version is Firestorm 7.2.4 (80611)
+
+## Official
+
 <img align="left" width="100" height="100" src="doc/firestorm_256.png" alt="Logo of Firestorm viewer"/>
 
 **[Firestorm](https://www.firestormviewer.org) is a free client for 3D virtual worlds such as Second Life and various OpenSim worlds where users can create, connect and chat with others from around the world.**
