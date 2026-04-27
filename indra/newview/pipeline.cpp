@@ -4200,6 +4200,8 @@ void LLPipeline::renderGeomDeferred(LLCamera& camera, bool do_occlusion)
     if (gUseWireframe)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glEnable(GL_CULL_FACE);
+
     }
 
     if (&camera == LLViewerCamera::getInstance())
@@ -4336,6 +4338,7 @@ void LLPipeline::renderGeomPostDeferred(LLCamera& camera)
     if (gUseWireframe)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glEnable(GL_CULL_FACE);
     }
 
     U32 cur_type = 0;

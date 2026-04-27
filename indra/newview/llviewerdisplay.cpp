@@ -849,26 +849,34 @@ void display(bool rebuild, F32 zoom_factor, int subfield, bool for_snapshot)
         stop_glerror();
 
         {
+        // mb: only update these things every 10th frame
+        static int updateThrottle=0;
+
+        {
             LL_PROFILE_ZONE_NAMED_CATEGORY_DISPLAY("Env Update");
             // update all the sky/atmospheric/water settings
             LLEnvironment::instance().update(&camera); // <FS:Ansariel> Factor out calls to getInstance
         }
 
-        // *TODO: merge these two methods
-        {
-            LL_PROFILE_ZONE_NAMED_CATEGORY_DISPLAY("HUD Update");
-            LLHUDManager::getInstance()->updateEffects();
-            LLHUDObject::updateAll();
-            stop_glerror();
-        }
+        if (++updateThrottle >= 10) {
+            updateThrottle = 0;
+            // *TODO: merge these two methods
+            {
+                LL_PROFILE_ZONE_NAMED_CATEGORY_DISPLAY("HUD Update");
+                LLHUDManager::getInstance()->updateEffects();
+                LLHUDObject::updateAll();
+                stop_glerror();
+            }
 
-        {
-            LL_PROFILE_ZONE_NAMED_CATEGORY_DISPLAY("Update Geom");
-            const F32 max_geom_update_time = 0.005f*10.f*gFrameIntervalSeconds.value(); // 50 ms/second update time
-            gPipeline.createObjects(max_geom_update_time);
-            gPipeline.processPartitionQ();
-            gPipeline.updateGeom(max_geom_update_time);
-            stop_glerror();
+            {
+                LL_PROFILE_ZONE_NAMED_CATEGORY_DISPLAY("Update Geom");
+                const F32 max_geom_update_time = 0.005f*10.f*gFrameIntervalSeconds.value(); // 50 ms/second update time
+                gPipeline.createObjects(max_geom_update_time);
+                gPipeline.processPartitionQ();
+                gPipeline.updateGeom(max_geom_update_time);
+                stop_glerror();
+            }
+        }
         }
 
         gPipeline.updateGL();
