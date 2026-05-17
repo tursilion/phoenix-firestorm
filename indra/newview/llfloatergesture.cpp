@@ -135,6 +135,7 @@ LLFloaterGesture::LLFloaterGesture(const LLSD& key)
     mCommitCallbackRegistrar.add("Gesture.Action.ShowPreview", boost::bind(&LLFloaterGesture::onClickEdit, this));
     mCommitCallbackRegistrar.add("Gesture.Action.CopyPaste", boost::bind(&LLFloaterGesture::onCopyPasteAction, this, _2));
     mCommitCallbackRegistrar.add("Gesture.Action.SaveToCOF", boost::bind(&LLFloaterGesture::addToCurrentOutFit, this));
+    mCommitCallbackRegistrar.add("Gesture.Action.CopyToClipboard", boost::bind(&LLFloaterGesture::copyToClipboard, this));
     mCommitCallbackRegistrar.add("Gesture.Action.Rename", boost::bind(&LLFloaterGesture::onRenameSelected, this));
     mCommitCallbackRegistrar.add("Gesture.Action.RefreshList", boost::bind(&LLFloaterGesture::refreshForActiveSort, this)); // <FS:PP> FIRE-5646: Option to show only active gestures
 
@@ -614,6 +615,40 @@ void LLFloaterGesture::onActivateBtnClick()
             }
         }
     }
+}
+
+void LLFloaterGesture::copyToClipboard()
+{
+    if (!are_gestures_enabled()) return; // <FS:PP> FIRE-36169 Gestures enable/disable switch
+
+    std::string buffer;
+    std::vector<LLScrollListItem*> items = mGestureList->getAllData();
+    std::vector<LLScrollListItem*>::iterator itor;
+    for (itor = items.begin(); itor != items.end(); ++itor)
+    {
+        // we parse the columns here too so we can skip 0 (activate_checkmark) and 3 (unmodified hotkey)
+        std::string ret;
+        std::string tail;
+
+        S32 count = (*itor)->getNumColumns();
+        for (S32 i=0; i<count; ++i)
+        {
+            if (i == 3) continue;   // skip unshifted hotkey
+            if (i == 0) {
+                if ((*itor)->getColumn(i)->getValue().asString() == "") {
+                    tail = ", (Disabled)";
+                }
+            } else {
+                ret += (*itor)->getColumn(i)->getValue().asString();
+                if (i < count-1)
+                {
+                    ret += ", ";
+                }
+            }
+        }
+        buffer += ret + tail + "\n";
+    }
+    LLClipboard::instance().copyToClipboard(utf8str_to_wstring(buffer), 0, static_cast<S32>(buffer.length()));
 }
 
 void LLFloaterGesture::onRenameSelected()

@@ -901,6 +901,7 @@ void LLInvFVBridge::getClipboardEntries(bool show_asset_id,
         bool is_agent_inventory = isAgentInventory();
         if (is_agent_inventory && !single_folder_root && !is_cof && !is_inbox)
         {
+            items.push_back(std::string("List to clipboard"));
             items.push_back(std::string("New folder from selected"));
             items.push_back(std::string("Subfolder Separator"));
             std::set<LLUUID> selected_uuid_set = LLAvatarActions::getInventorySelectedUUIDs();

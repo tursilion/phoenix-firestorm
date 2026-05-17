@@ -99,6 +99,7 @@ private:
     void onCopyPasteAction(const LLSD& command);
     void onDeleteSelected();
     void onRenameSelected();
+    void copyToClipboard(); // mb
 
     // <FS:PP> FIRE-36169 Gestures enable/disable switch
     void onGesturesEnabledChanged();

@@ -82,7 +82,8 @@
 			<menu_item_call label="新的晝夜循環" name="New Day Cycle" />
 		</menu>
 	</menu>
-	<menu_item_call label="從所選中建立新檔案夾" name="New folder from selected" />
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="從所選中建立新檔案夾" name="New folder from selected" />
 	<menu_item_call label="取消檔案夾分組" name="Ungroup folder items" />
 	<menu_item_call label="添加到收藏" name="Add to Favorites" />
 	<menu_item_call label="從收藏中移除" name="Remove from Favorites" />

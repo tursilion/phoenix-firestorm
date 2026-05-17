@@ -49,7 +49,8 @@
 	<menu_item_call label="Снять" name="Take Off"/>
 	<menu_item_call name="Настройки применить локально" label="Apply Only To Myself"/>
 	<menu_item_call name="Настройки применить к участку" label="Apply To Parcel"/>
-	<menu_item_call label="Создать папку из выбранных" name="New folder from selected"/>
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="Создать папку из выбранных" name="New folder from selected"/>
 	<menu_item_call label="Разгруппировать элементы папки" name="Ungroup folder items"/>
 	<menu_item_call label="Добавить в избранное" name="Add to Favorites"/>
 	<menu_item_call label="Удалить из избранного" name="Remove from Favorites"/>

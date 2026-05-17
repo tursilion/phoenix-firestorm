@@ -105,7 +105,8 @@
 	<menu_item_call label="Sposta nella cartella predefinita" name="Move to Default Folder"/>
 	<menu_item_call label="Sposta in Oggetti smarriti" name="Move to Lost And Found"/>
 	<menu_item_call label="Elimina cartella di sistema" name="Delete System Folder"/>
-	<menu_item_call label="Crea cartella dagli elementi selezionati" name="New folder from selected" />
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="Crea cartella dagli elementi selezionati" name="New folder from selected" />
 	<menu_item_call label="Separa gli elementi della cartella" name="Ungroup folder items" />
 	<menu_item_call label="Avvia conferenza in chat" name="Conference Chat Folder"/>
 	<menu_item_call label="Suona" name="Sound Play"/>

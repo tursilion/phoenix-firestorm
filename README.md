@@ -13,7 +13,10 @@ Here are the current changes from the official client:
 * Gesture editor has F1-F12 listed first in keys
 * Gesture editor removes duplicate sounds from sound list
 * Gesture editor adds a button to zero out the hotkeys with a click
+* Gesture editor has larger input fields (English only)
+* Dump entire gesture list to clipboard (name, trigger and hotkey, plus disabled status)
 * Enabled UUID columns in animation explorer
+* Right-click inventory to export object names to clipboard
 
 Each change is self-contained in its own branch, to make it easier to pull them out. However, I don't have any intention of going to the work to make properly formatted patches for upstream. If you wish to do so yourself, you have my permission (just let me know so I know to remove my code when I update).
 

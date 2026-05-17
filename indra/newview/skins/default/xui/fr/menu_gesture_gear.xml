@@ -4,6 +4,7 @@
 	<menu_item_call label="Copier" name="copy_gesture"/>
 	<menu_item_call label="Coller" name="paste"/>
 	<menu_item_call label="Copier l'UUID" name="copy_uuid"/>
-	<menu_item_call label="Enregistrer dans la tenue actuelle" name="save_to_outfit"/>
+    <menu_item_call label="Copy to clipboard" name="copy_to_clipboard"/>
+    <menu_item_call label="Enregistrer dans la tenue actuelle" name="save_to_outfit"/>
 	<menu_item_call label="Modifier" name="edit_gesture"/>
 </toggleable_menu>

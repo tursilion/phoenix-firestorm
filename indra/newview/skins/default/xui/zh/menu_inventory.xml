@@ -105,7 +105,8 @@
 	<menu_item_call label="移至預設檔案夾" name="Move to Default Folder" />
 	<menu_item_call label="移至失物招領" name="Move to Lost And Found" />
 	<menu_item_call label="刪除系統檔案夾" name="Delete System Folder" />
-	<menu_item_call label="從所選內容建立新檔案夾" name="New folder from selected" />
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="從所選內容建立新檔案夾" name="New folder from selected" />
 	<menu_item_call label="取消檔案夾中的物件分組" name="Ungroup folder items" />
 	<menu_item_call label="添加到收藏" name="Add to Favorites" />
 	<menu_item_call label="從收藏中移除" name="Remove from Favorites" />

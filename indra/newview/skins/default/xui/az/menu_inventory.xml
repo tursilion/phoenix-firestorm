@@ -99,7 +99,8 @@
 	<menu_item_call label="Susmaya görə olan qovluğa daşı" name="Move to Default Folder"/>
 	<menu_item_call label="'İtmiş və tapılmış'-a daşı" name="Move to Lost And Found"/>
 	<menu_item_call label="Sistem qovluğunu sil" name="Delete System Folder"/>
-	<menu_item_call label="Seçilmişlərdən qovluq yarat" name="New folder from selected"/>
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="Seçilmişlərdən qovluq yarat" name="New folder from selected"/>
 	<menu_item_call label="Qovluq elementlərini qrupdan çıxart" name="Ungroup folder items"/>
 	<menu_item_call label="Konfrans söhbətinə başla" name="Conference Chat Folder"/>
 	<menu_item_call label="Oynat" name="Sound Play"/>

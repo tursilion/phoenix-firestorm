@@ -80,7 +80,8 @@
 		<menu_item_call label="Neues Wasser" name="New Water"/>
 		<menu_item_call label="Neuer Tageszyklus" name="New Day Cycle"/>
 	</menu>
-	<menu_item_call label="Neuen Ordner aus Auswahl erstellen" name="New folder from selected"/>
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="Neuen Ordner aus Auswahl erstellen" name="New folder from selected"/>
 	<menu_item_call label="Gruppierung durch den Ordner aufheben" name="Ungroup folder items"/>
 	<menu_item_call label="Zu Favoriten hinzufügen" name="Add to Favorites"/>
 	<menu_item_call label="Aus Favoriten entfernen" name="Remove from Favorites"/>

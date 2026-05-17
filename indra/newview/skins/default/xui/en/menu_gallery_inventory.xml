@@ -655,6 +655,14 @@
       </menu>
   </menu>
   <menu_item_call
+    label="List to clipboard"
+    layout="topleft"
+    name="List to clipboard">
+        <menu_item_call.on_click
+        function="Inventory.DoToSelected"
+        parameter="list_to_clipboard" />
+  </menu_item_call>
+  <menu_item_call
    label="Create folder from selected"
    layout="topleft"
    name="New folder from selected">

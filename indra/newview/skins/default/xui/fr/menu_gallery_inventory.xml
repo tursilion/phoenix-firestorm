@@ -49,7 +49,8 @@
 	<menu_item_call label="Enlever" name="Take Off"/>
 	<menu_item_call label="Appliquer uniquement à moi" name="Settings Apply Local"/>
 	<menu_item_call label="Appliquer à la parcelle" name="Settings Apply Parcel"/>
-	<menu_item_call label="Nouveau dossier à partir de la sélection" name="New folder from selected"/>
+    <menu_item_call label="List to clipboard" name="List to clipboard"/>
+    <menu_item_call label="Nouveau dossier à partir de la sélection" name="New folder from selected"/>
 	<menu_item_call label="Annuler le regroupement par dossier" name="Ungroup folder items"/>
 	<menu_item_call label="Ajouter aux favoris" name="Add to Favorites"/>
 	<menu_item_call label="Supprimer des favoris" name="Remove from Favorites"/>

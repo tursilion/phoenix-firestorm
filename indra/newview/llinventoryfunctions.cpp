@@ -4008,6 +4008,31 @@ void LLInventoryAction::doToSelected(LLInventoryModel* model, LLFolderView* root
     {
         (new LLDirPickerThread(boost::bind(&LLInventoryAction::saveMultipleTextures, _1, selected_items, model), std::string()))->getFile();
     }
+    else if ("list_to_clipboard" == action)
+    {
+        // mb - list names of inventory items to clipboard
+        LLClipboard::instance().reset();
+
+        LLInventoryObject* first_item = gInventory.getObject(*ids.begin());
+        if (!first_item)
+        {
+            return;
+        }
+        const LLUUID& parent_uuid = first_item->getParentUUID();
+        std::string outnames;
+        for (uuid_vec_t::const_iterator it = ids.begin(); it != ids.end(); ++it)
+        {
+            LLInventoryObject *item = gInventory.getObject(*it);
+            // item must exist and be in the same folder
+            if (item && item->getParentUUID() == parent_uuid)
+            {
+                outnames += item->getName() + "\n";
+            }
+        }
+
+        LLWString str = utf8str_to_wstring(outnames);
+        LLClipboard::instance().copyToClipboard(str, 0, (S32)str.length(), false);
+    }
     else if ("new_folder_from_selected" == action)
     {
         LLInventoryObject* first_item = gInventory.getObject(*ids.begin());
