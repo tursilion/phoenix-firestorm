@@ -1,0 +1,31 @@
+**DONE**
+
+- mute typoed gestures (/xyx) - don't echo them to local chat
+- New RLV command: @gesture=/ will run a gesture through RLV, meaning scripts (and WLV) can trigger gestures (if the gesture command starts with '/')
+- Gesture editor has F1-F12 listed first in keys
+- Gesture editor removes duplicate sounds from sound list
+- Gesture editor adds a button to zero out the hotkeys with a click
+- new control key "toggle hearfrom" can be bound, works with HUD down. (I use Control-Tab). This lets you toggle hear voice from avatar/camera position without needing the UI up (for streaming).
+- display hearfrom location in window title if hotkey is pressed (this lets you see it even when the hud is turned off for streaming)
+- Enabled UUID columns in animation explorer
+
+** NEW **
+
+Pulled latest Firestorm patches as of July 29, 2026 - 7.2.5.81376, PLUS:
+
+- when setting a gesture hotkey, automatically clear any old gesture with the same new hotkey (no more duplicates!)
+- When clearing or adding a hotkey, now properly refreshes the gesture list
+- right-click menu added to gesture list (copy of gear menu for convenience)
+- clear hotkey from right-click gesture list (rather than having to edit)
+- right-click an inventory folder and "make gestures from animations"
+    - enumerates all animations in folder (non-recursive), and creates /67 gestures for them automatically
+- improve sound explorer logging - longer delay before auto-expire, and longer list
+
+**TODO**
+
+- can we make it turn down non-group sounds? (good for streaming) We might be able to tell client side since it knows who made the sound.
+- opening joystick configuration is really slow - looking for old hardware? Can lag out
+    - this is caused by something in directX - it happens in Classic99 and some emulators too
+- button to kick/ban from someone else's profile
+
+
