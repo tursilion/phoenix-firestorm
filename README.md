@@ -6,21 +6,30 @@ This is a fork of Firestorm that has minor quality of life improvements - mainly
 
 Here are the current changes from the official client:
 
-* mute typoed gestures (/xyx) - don't echo them to local chat
 * New RLV command: @gesture=/ will run a gesture through RLV, meaning scripts (and WLV) can trigger gestures (if the gesture command starts with '/')
-* new control key "toggle hearfrom" can be bound, works with HUD down. (I use Control-Tab). This lets you toggle hear voice from avatar/camera position without needing the UI up (for streaming).
-* display hearfrom location in window title if hotkey is pressed (this lets you see it even when the hud is turned off for streaming)
+* mute typoed gestures (/xyx) - don't echo them to local chat
 * Gesture editor has F1-F12 listed first in keys
 * Gesture editor removes duplicate sounds from sound list
 * Gesture editor adds a button to zero out the hotkeys with a click
 * Gesture editor has larger input fields (English only)
-* Dump entire gesture list to clipboard (name, trigger and hotkey, plus disabled status)
+* when setting a gesture hotkey, automatically clear any old gesture with the same new hotkey (no more duplicates!)
+* When clearing or adding a hotkey, now properly refreshes the gesture list
+* right-click menu added to gesture list (copy of gear menu for convenience)
+* clear hotkey from right-click gesture list (rather than having to edit)
+* Dump entire gesture list to clipboard (name, trigger and hotkey, plus disabled status - this is used for a web client I built that can look up and describe your gestures)
+* new control key "toggle hearfrom" can be bound, works with HUD down. (I use Control-Tab). This lets you toggle hear voice from avatar/camera position without needing the UI up (for streaming).
+* display hearfrom location in window title if hotkey is pressed (this lets you see it even when the hud is turned off for streaming)
 * Enabled UUID columns in animation explorer
+* improve sound explorer logging - longer delay before auto-expire, and longer list
 * Right-click inventory to export object names to clipboard
+* right-click an inventory folder and "make gestures from animations"
+** enumerates all animations in folder (non-recursive), and creates /67 gestures for them automatically
+
+The tursi1 branch is the main one, and you should find a current installer download at https://harmlesslion.com/temp/fs
 
 Each change is self-contained in its own branch, to make it easier to pull them out. However, I don't have any intention of going to the work to make properly formatted patches for upstream. If you wish to do so yourself, you have my permission (just let me know so I know to remove my code when I update).
 
-Current version is Firestorm 7.2.4 (80611)
+Current version is Firestorm 7.2.5 (81376)
 
 ## Official
 
