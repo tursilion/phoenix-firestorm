@@ -187,9 +187,11 @@ Most third party libraries needed to build the viewer will be automatically down
 If you want to use FMOD Studio to play sounds within the viewer, you will have to download your own copy. FMOD Studio can be downloaded [here](https://www.fmod.com) (requires creating an account to access the download section).
 
 > [!IMPORTANT]
-> Make sure to download the FMOD Studio API (FMOD Engine - v 2.02 required!) and not the FMOD Studio Tool!
+> Make sure to download the FMOD Studio API (FMOD Engine - v 2.03.12 required!) and not the FMOD Studio Tool!
 > Remember to put the INSTALLER into the 3p-fmodstudio folder created in the next step, don't run it!
 > I can't provide the installer unfortunately.
+
+NOTE: the hard coded path in /autobuild.xml expects /cygwin/opt, you may need to fix it.
 
 ```
 c:
@@ -221,6 +223,7 @@ But more likely, the first autobuild will dump you into a command prompt because
 - you can see the cmd.exe line it tried to run above, go ahead and run that command manually (skipping the cmd.exe /c part and the quotes)
 - wait for the GUI installer to finish - it is slow to start up. It will create the fmodstudio... folder for you
 - type 'exit' to exit the secondary cmd prompt and continue the autobuild
+- if you get "aborted", you may have proceeded too quickly. You can run the script again and just exit the secondary cmd prompt.
 - when done, remember to run the second autobuild command
 
 Near the end of the output you will see the package name written:
@@ -262,11 +265,22 @@ Then enter:
 c:
 cd \firestorm\phoenix-firestorm
 autobuild configure -A 64 -c ReleaseFS_open -- --fmodstudio --chan slpw -DLL_TESTS:BOOL=FALSE
+-or-
+autobuild configure -A 64 -c ReleaseFS_open -- --avx2 --fmodstudio --package --kdu=NO --chan slpw -DLL_TESTS:BOOL=FALSE
 ```
 
 This will configure Firestorm to be built with all defaults and without third party libraries except fmod.
 
 You can add the installer with --package after fmodstudio.
+
+(
+If you forget and want the installer later, run these two commands:
+
+  cmake -DPACKAGE:BOOL=ON build-vc170-64
+  cmake --build build-vc170-64 --config Release --target llpackage
+
+The first activates the switch, and the second actually does the build.
+)
 
 You may see the error "Could not create named generator Visual Studio 17 2022"... 
 
@@ -278,6 +292,10 @@ path=c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonE
 ```
 
 Your path will differ.
+
+If you get an upgrade error (for instance "Package not installable due to conflicts", and the conflict shows a version update, you can remove the old package with: autobuild uninstall boost (for instance). But it may be better to just remove the build-vc-170-64 folder and start clean.
+
+It doesn't seem to be possible to get KDU (JPEG2000 commercial library for some reason), so you may need --kdu=NO
 
 Available premade firestorm-specific build targets:
 
