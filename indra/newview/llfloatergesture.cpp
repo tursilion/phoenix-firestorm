@@ -40,6 +40,7 @@
 #include "llgesturemgr.h"
 #include "llkeyboard.h"
 #include "llmenugl.h"
+#include "llmenubutton.h"
 #include "llmultigesture.h"
 #include "llnotificationsutil.h"
 #include "llpreviewgesture.h"
@@ -209,6 +210,7 @@ bool LLFloaterGesture::postBuild()
     mGestureList = getChild<LLScrollListCtrl>("gesture_list");
     mGestureList->setCommitCallback(boost::bind(&LLFloaterGesture::onCommitList, this));
     mGestureList->setDoubleClickCallback(boost::bind(&LLFloaterGesture::onClickPlay, this));
+    mGestureList->setRightMouseDownCallback(boost::bind(&LLFloaterGesture::onGestureListRightClick, this, _1, _2, _3, _4));
 
     // <FS:PP> Filter field
     mGestureList->setFilterColumn(1);
@@ -754,6 +756,23 @@ void LLFloaterGesture::onClickEdit()
     if (!previewp->getHost())
     {
         previewp->setRect(gFloaterView->findNeighboringPosition(this, previewp));
+    }
+}
+
+void LLFloaterGesture::onGestureListRightClick(LLUICtrl* ctrl, S32 x, S32 y, MASK mask)
+{
+    // Select the row under the cursor so the menu acts on it, then reuse the
+    // gear button's menu as a context menu (same items, same callbacks).
+    mGestureList->selectItemAt(x, y, mask);
+    onCommitList();
+
+    LLMenuButton* gear_btn = getChild<LLMenuButton>("gear_btn");
+    LLMenuGL* menu = gear_btn ? gear_btn->getMenu() : NULL;
+    if (menu && gear_btn->getEnabled())
+    {
+        menu->buildDrawLabels();
+        menu->updateParent(LLMenuGL::sMenuContainer);
+        LLMenuGL::showPopup(mGestureList, menu, x, y);
     }
 }
 

@@ -94,6 +94,7 @@ private:
     void onClickEdit();
     void onClickPlay();
     void onClickRight();
+    void onGestureListRightClick(LLUICtrl* ctrl, S32 x, S32 y, MASK mask);
     void onClickNew();
     void onCommitList();
     void onCopyPasteAction(const LLSD& command);
