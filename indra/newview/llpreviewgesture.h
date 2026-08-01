@@ -134,6 +134,12 @@ protected:
     static void onDonePreview(LLMultiGesture* gesture, void* data);
 
     static void finishInventoryUpload(LLUUID itemId, LLUUID newAssetId);
+
+    // When this gesture is given a hotkey, clear that same hotkey from any other
+    // active gesture (and persist the change) so a key can't fire the wrong one.
+    void clearConflictingHotkeys(KEY key, MASK mask);
+    // Re-upload the (modified) gesture as the asset for agent-inventory item_id.
+    static void saveGestureToAgentInventory(const LLUUID& item_id, LLMultiGesture* gesture);
 private:
     // LLPreview contains mDescEditor
     LLLineEditor*   mTriggerEditor;

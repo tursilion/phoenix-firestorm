@@ -53,6 +53,7 @@
 #include "llviewerstats.h"
 #include "llviewerassetupload.h"
 #include "llviewercontrol.h" // <FS:PP> FIRE-36169 Gestures enable/disable switch
+#include "fscommon.h" // report_to_nearby_chat
 
 std::string NONE_LABEL;
 std::string SHIFT_LABEL;
@@ -1150,6 +1151,13 @@ void LLPreviewGesture::saveIfNeeded()
         return;
     }
 
+    // This gesture is committing to a hotkey; make sure no other active gesture
+    // holds the same hotkey, otherwise the key would randomly fire either one.
+    if (gesture->mKey != KEY_NONE)
+    {
+        clearConflictingHotkeys(gesture->mKey, gesture->mMask);
+    }
+
     LLAssetID assetId;
     LLPreview::onCommit();
     bool delayedUpload(false);
@@ -1247,6 +1255,115 @@ void LLPreviewGesture::saveIfNeeded()
         refresh();
     }
 
+}
+
+
+void LLPreviewGesture::clearConflictingHotkeys(KEY key, MASK mask)
+{
+    if (key == KEY_NONE)
+    {
+        return;
+    }
+
+    LLGestureMgr& gesture_mgr = LLGestureMgr::instance();
+
+    // Collect conflicts first: persisting each one enqueues an async upload, so
+    // we avoid touching anything while iterating the active gesture map.
+    std::vector<std::pair<LLUUID, LLMultiGesture*> > conflicts;
+    for (const auto& [item_id, gesture] : gesture_mgr.getActiveGestures())
+    {
+        // Asset data might not have arrived yet.
+        if (!gesture)
+        {
+            continue;
+        }
+        // Never clear the gesture we're editing.
+        if (item_id == mItemUUID)
+        {
+            continue;
+        }
+        if (gesture->mKey == key && gesture->mMask == mask)
+        {
+            conflicts.emplace_back(item_id, gesture);
+        }
+    }
+
+    const std::string hotkey_string = LLKeyboard::stringFromAccelerator(mask, key);
+    for (const auto& [item_id, gesture] : conflicts)
+    {
+        gesture->mKey = KEY_NONE;
+        gesture->mMask = MASK_NONE;
+
+        std::string gesture_name = gesture->mTrigger;
+        if (LLViewerInventoryItem* item = gInventory.getItem(item_id))
+        {
+            gesture_name = item->getName();
+        }
+
+        FSCommon::report_to_nearby_chat(
+            llformat("Gesture editor: cleared hotkey %s from conflicting gesture \"%s\"",
+                     hotkey_string.c_str(), gesture_name.c_str()));
+
+        // Persist so the cleared hotkey doesn't return on next login.
+        saveGestureToAgentInventory(item_id, gesture);
+    }
+}
+
+
+// static
+void LLPreviewGesture::saveGestureToAgentInventory(const LLUUID& item_id, LLMultiGesture* gesture)
+{
+    if (!gesture)
+    {
+        return;
+    }
+
+    LLViewerInventoryItem* item = (LLViewerInventoryItem*)gInventory.getItem(item_id);
+    if (!item)
+    {
+        LL_WARNS() << "Cannot persist hotkey change; gesture item " << item_id
+                   << " not found in agent inventory." << LL_ENDL;
+        return;
+    }
+
+    // Serialize the (modified) gesture into an ASCII buffer.
+    S32 max_size = gesture->getMaxSerialSize();
+    std::vector<char> buffer(max_size);
+    LLDataPackerAsciiBuffer dp(buffer.data(), max_size);
+    if (!gesture->serialize(dp))
+    {
+        LL_WARNS() << "Failed to serialize gesture " << item_id
+                   << " while clearing its hotkey." << LL_ENDL;
+        return;
+    }
+
+    const LLViewerRegion* region = gAgent.getRegion();
+    std::string agent_url = region ? region->getCapability("UpdateGestureAgentInventory") : std::string();
+
+    if (!agent_url.empty())
+    {
+        LLResourceUploadInfo::ptr_t upload_info = std::make_shared<LLBufferedAssetUploadInfo>(
+            item_id, LLAssetType::AT_GESTURE, std::string(buffer.data()),
+            [](LLUUID itemId, LLUUID newAssetId, LLUUID, LLSD)
+            {
+                LLPreviewGesture::finishInventoryUpload(itemId, newAssetId);
+            },
+            nullptr);
+        LLViewerAssetUpload::EnqueueInventoryUpload(agent_url, upload_info);
+    }
+    else if (gAssetStorage)
+    {
+        // Legacy fallback for regions without the capability.
+        LLTransactionID tid;
+        tid.generate();
+        LLAssetID asset_id = tid.makeAssetID(gAgent.getSecureSessionID());
+
+        LLFileSystem file(asset_id, LLAssetType::AT_GESTURE, LLFileSystem::APPEND);
+        file.write((U8*)buffer.data(), dp.getCurrentSize());
+
+        LLSaveInfo* info = new LLSaveInfo(item_id, LLUUID::null, item->getDescription(), tid);
+        gAssetStorage->storeAssetData(tid, LLAssetType::AT_GESTURE, onSaveComplete, info, false);
+    }
 }
 
 
