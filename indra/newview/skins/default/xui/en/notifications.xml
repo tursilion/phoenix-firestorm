@@ -7022,6 +7022,28 @@ The folder &apos;[FOLDERNAME]&apos; is a system folder. Deleting system folders 
 
   <notification
    icon="alertmodal.tga"
+   name="GesturizeAnimationsConfirm"
+   type="alertmodal">
+[COUNT] gesture(s) will be created and activated for animations in this folder. Proceed?
+    <tag>confirm</tag>
+    <usetemplate
+     name="okcancelbuttons"
+     notext="No"
+     yestext="Yes"/>
+  </notification>
+
+  <notification
+   icon="alertmodal.tga"
+   name="GesturizeAnimationsNone"
+   type="alertmodal">
+Every animation in this folder already has a matching gesture. Nothing to create.
+    <usetemplate
+     name="okbutton"
+     yestext="OK"/>
+  </notification>
+
+  <notification
+   icon="alertmodal.tga"
    name="TrashIsFull"
    type="alertmodal">
 Your trash is overflowing. This may cause problems logging in.

@@ -103,6 +103,12 @@
 #include "fsfloaterwearablefavorites.h"
 #include "llviewerattachmenu.h"
 #include "llresmgr.h"
+// MB: Create chat gestures for animations in a folder
+#include "llmultigesture.h"
+#include "lldatapacker.h"
+#include "llviewerassetupload.h"
+#include "llfloaterperms.h"
+// MB: END
 
 void copy_slurl_to_clipboard_callback_inv(const std::string& slurl);
 
@@ -3836,8 +3842,188 @@ void LLInventoryCopyAndWearObserver::changed(U32 mask)
     }
 }
 
+// MB: Create chat gestures for animations in a folder
+namespace
+{
+// Drives sequential creation of chat gestures for a list of animation names in a
+// single folder. Each gesture is: create empty inventory item -> upload an asset
+// with one chat step "/67<name>" -> activate. Owns itself via a shared_ptr that
+// is kept alive by the async callbacks until the whole list is processed.
+class FSAnimGestureCreator : public std::enable_shared_from_this<FSAnimGestureCreator>
+{
+public:
+    FSAnimGestureCreator(const LLUUID& folder_id, const std::vector<std::string>& names)
+    :   mFolderId(folder_id), mNames(names)
+    {}
+
+    void start() { createNext(); }
+
+private:
+    void createNext()
+    {
+        if (mIndex >= mNames.size())
+        {
+            LL_INFOS() << "Created " << mCreated << " of " << mNames.size()
+                       << " animation gestures in folder " << mFolderId << LL_ENDL;
+            gInventory.notifyObservers();
+            return;
+        }
+
+        const std::string name = mNames[mIndex];
+        std::shared_ptr<FSAnimGestureCreator> self = shared_from_this();
+        LLPointer<LLInventoryCallback> cb = new LLBoostFuncInventoryCallback(
+            [self, name](const LLUUID& new_item_id) { self->onItemCreated(new_item_id, name); });
+
+        create_inventory_item(gAgent.getID(), gAgent.getSessionID(),
+                              mFolderId, LLTransactionID::tnull,
+                              name, std::string(),
+                              LLAssetType::AT_GESTURE, LLInventoryType::IT_GESTURE,
+                              NO_INV_SUBTYPE,
+                              LLFloaterPerms::getNextOwnerPerms("Gestures"),
+                              cb);
+    }
+
+    void onItemCreated(const LLUUID& item_id, const std::string& name)
+    {
+        if (item_id.isNull())
+        {
+            LL_WARNS() << "Failed to create gesture item for animation \"" << name << "\"" << LL_ENDL;
+            advance();
+            return;
+        }
+
+        // Build a gesture triggered by "/<name>" whose single step chats
+        // "/67<name>" verbatim.
+        LLMultiGesture gesture;
+        gesture.mTrigger = "/" + name;
+        LLGestureStepChat* chat_step = new LLGestureStepChat();
+        chat_step->mChatText = "/67" + name;
+        gesture.mSteps.push_back(chat_step);
+
+        std::vector<char> buffer(gesture.getMaxSerialSize());
+        LLDataPackerAsciiBuffer dp(buffer.data(), static_cast<S32>(buffer.size()));
+        if (!gesture.serialize(dp))
+        {
+            LL_WARNS() << "Failed to serialize generated gesture for \"" << name << "\"" << LL_ENDL;
+            advance();
+            return;
+        }
+        std::string contents(buffer.data());
+
+        const LLViewerRegion* region = gAgent.getRegion();
+        std::string agent_url = region ? region->getCapability("UpdateGestureAgentInventory") : std::string();
+        if (agent_url.empty())
+        {
+            LL_WARNS() << "No UpdateGestureAgentInventory capability; cannot save gesture for \"" << name << "\"" << LL_ENDL;
+            advance();
+            return;
+        }
+
+        std::shared_ptr<FSAnimGestureCreator> self = shared_from_this();
+        LLResourceUploadInfo::ptr_t upload_info = std::make_shared<LLBufferedAssetUploadInfo>(
+            item_id, LLAssetType::AT_GESTURE, contents,
+            [self, item_id](LLUUID, LLUUID new_asset_id, LLUUID, LLSD)
+            {
+                self->onUploadComplete(item_id, new_asset_id);
+            },
+            [self](LLUUID, LLUUID, LLSD, std::string reason) -> bool
+            {
+                LL_WARNS() << "Gesture asset upload failed: " << reason << LL_ENDL;
+                self->advance();
+                return false;
+            });
+        LLViewerAssetUpload::EnqueueInventoryUpload(agent_url, upload_info);
+    }
+
+    void onUploadComplete(const LLUUID& item_id, const LLUUID& new_asset_id)
+    {
+        if (new_asset_id.notNull())
+        {
+            LLGestureMgr::instance().activateGestureWithAsset(item_id, new_asset_id, true, false);
+            ++mCreated;
+        }
+        advance();
+    }
+
+    void advance()
+    {
+        ++mIndex;
+        createNext();
+    }
+
+    LLUUID mFolderId;
+    std::vector<std::string> mNames;
+    size_t mIndex { 0 };
+    size_t mCreated { 0 };
+};
+
+// Enumerate animations directly in this folder and, for each one lacking a
+// same-named gesture in the same folder, queue up creation of a chat gesture.
+void gesturize_folder_animations(const LLUUID& folder_id)
+{
+    LLInventoryModel::cat_array_t* cats = nullptr;
+    LLInventoryModel::item_array_t* items = nullptr;
+    gInventory.getDirectDescendentsOf(folder_id, cats, items);
+    if (!items)
+    {
+        return;
+    }
+
+    // Exact, case-sensitive gesture names already present in this folder.
+    std::set<std::string> gesture_names;
+    for (const LLPointer<LLViewerInventoryItem>& item : *items)
+    {
+        if (item && !item->getIsLinkType() && item->getType() == LLAssetType::AT_GESTURE)
+        {
+            gesture_names.insert(item->getName());
+        }
+    }
+
+    // Animations with no matching gesture (deduplicated by name so we don't make
+    // two identical gestures for two identically-named animations).
+    std::set<std::string> seen;
+    std::vector<std::string> to_create;
+    for (const LLPointer<LLViewerInventoryItem>& item : *items)
+    {
+        if (item && !item->getIsLinkType() && item->getType() == LLAssetType::AT_ANIMATION)
+        {
+            const std::string& name = item->getName();
+            if (!gesture_names.count(name) && seen.insert(name).second)
+            {
+                to_create.push_back(name);
+            }
+        }
+    }
+
+    if (to_create.empty())
+    {
+        LLNotificationsUtil::add("GesturizeAnimationsNone");
+        return;
+    }
+
+    LLSD args;
+    args["COUNT"] = static_cast<LLSD::Integer>(to_create.size());
+    LLNotificationsUtil::add("GesturizeAnimationsConfirm", args, LLSD(),
+        [folder_id, to_create](const LLSD& notification, const LLSD& response)
+        {
+            if (LLNotificationsUtil::getSelectedOption(notification, response) == 0)
+            {
+                std::make_shared<FSAnimGestureCreator>(folder_id, to_create)->start();
+            }
+        });
+}
+} // namespace
+// MB: end
+
 void LLFolderBridge::performAction(LLInventoryModel* model, std::string action)
 {
+    // MB: Create chat gestures for animations in a folder
+    if ("gesturize_animations" == action)
+    {
+        gesturize_folder_animations(mUUID);
+        return;
+    }
+    // MB: End
     if ("open" == action)
     {
         LLFolderViewFolder *f = dynamic_cast<LLFolderViewFolder   *>(mInventoryPanel.get()->getItemByID(mUUID));
@@ -5332,6 +5518,14 @@ void LLFolderBridge::buildContextMenuFolderOptions(U32 flags,   menuentry_vec_t&
             items.push_back(std::string("Conference Chat Folder"));
             items.push_back(std::string("IM All Contacts In Folder"));
         }
+
+        // MB: Offer creating chat gestures for animations in this folder.
+        LLIsType is_animation(LLAssetType::AT_ANIMATION);
+        if (checkFolderForContentsOfType(model, is_animation))
+        {
+            items.push_back(std::string("Gesturize Animations"));
+        }
+        // MB: End
 
         if (((flags & ITEM_IN_MULTI_SELECTION) == 0) && hasChildren() && (type != LLFolderType::FT_OUTFIT))
         {
