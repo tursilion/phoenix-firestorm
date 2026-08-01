@@ -243,18 +243,18 @@ void FSNearbyChatControl::autohide(bool after_send)
     if (isDefault())
     {
         const bool in_mouselook = gAgentCamera.cameraMouselook();
-        const bool closeChatOnReturn = gSavedSettings.getBOOL("CloseChatOnReturn") 
+        const bool show_interface_in_mouselook = gSavedSettings.getBOOL("FSShowInterfaceInMouselook");
+        const bool closeChatOnReturn = gSavedSettings.getBOOL("CloseChatOnReturn")
                          && !(!in_mouselook && gSavedSettings.getBOOL("FSCloseChatOnReturnInMouselook"));
         const bool autohideChatBar = gSavedSettings.getBOOL("AutohideChatBar");
-        bool hide_chatbar = false;
 
         if (closeChatOnReturn)
         {
             setFocus(false);
-            hide_chatbar = autohideChatBar;
         }
 
-        if (hide_chatbar || (!after_send && autohideChatBar))
+        if ((!after_send || closeChatOnReturn) &&
+            ((in_mouselook && !show_interface_in_mouselook) || autohideChatBar))
         {
             FSNearbyChat::instance().showDefaultChatBar(false);
         }
@@ -303,7 +303,16 @@ bool FSNearbyChatControl::handleKeyHere(KEY key, MASK mask)
         else if (mask == (MASK_SHIFT | MASK_CONTROL))
         {
             // linefeed
-            addChar(llwchar(182));
+            if ((wstring_utf8_length(getWText()) + wchar_utf8_length(llwchar(182))) > getMaxTextLength())
+            {
+                LLUI::getInstance()->reportBadKeystroke();
+            }
+            else
+            {
+                LLWString line_break(1, llwchar(182));
+                insertText(line_break);
+            }
+
             return true;
         }
         else

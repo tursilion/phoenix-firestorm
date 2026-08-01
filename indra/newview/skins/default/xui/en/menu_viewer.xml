@@ -68,6 +68,9 @@
           <menu_item_call.on_click
            function="Inventory.NewWindow"
            parameter="" />
+          <menu_item_call.on_enable
+           function="RLV.EnableIfNot"
+           parameter="showinv" />
         </menu_item_call>
         <menu_item_check
          label="Protected Folders"
@@ -775,6 +778,48 @@
                 <menu_item_check.on_click
                  function="World.SetRejectFriendshipRequests"/>
             </menu_item_check>
+            <menu
+             create_jump_keys="true"
+             label="Ad-hoc conferences"
+             name="Ad-hoc conferences"
+             tear_off="true">
+                <menu_item_check
+                 label="Automatically ignore and leave all"
+                 name="FSIgnoreAdHocSessions">
+                    <menu_item_check.on_check
+                     function="CheckControl"
+                     parameter="FSIgnoreAdHocSessions" />
+                    <menu_item_check.on_click
+                     function="ToggleControl"
+                     parameter="FSIgnoreAdHocSessions" />
+                </menu_item_check>
+                <menu_item_check
+                 label="Report ignored in nearby chat"
+                 name="FSReportIgnoredAdHocSession">
+                    <menu_item_check.on_check
+                     function="CheckControl"
+                     parameter="FSReportIgnoredAdHocSession" />
+                    <menu_item_check.on_click
+                     function="ToggleControl"
+                     parameter="FSReportIgnoredAdHocSession" />
+                    <menu_item_check.on_enable
+                     function="CheckControl"
+                     parameter="FSIgnoreAdHocSessions" />
+                </menu_item_check>
+                <menu_item_check
+                 label="Don't ignore from my friends"
+                 name="FSDontIgnoreAdHocFromFriends">
+                    <menu_item_check.on_check
+                     function="CheckControl"
+                     parameter="FSDontIgnoreAdHocFromFriends" />
+                    <menu_item_check.on_click
+                     function="ToggleControl"
+                     parameter="FSDontIgnoreAdHocFromFriends" />
+                    <menu_item_check.on_enable
+                     function="CheckControl"
+                     parameter="FSIgnoreAdHocSessions" />
+                </menu_item_check>
+            </menu>
         
         </menu>
         
@@ -1402,7 +1447,8 @@
             </menu_item_check>
             <menu_item_check
              label="Use Shared Environment"
-             name="Use Shared Environment">
+             name="Use Shared Environment"
+             shortcut="control|shift|J">
                 <menu_item_check.on_click
                  function="World.EnvSettings"
                  parameter="region" />
@@ -3923,18 +3969,6 @@
                 <menu_item_check.on_click
                  function="Advanced.ToggleConsole"
                  parameter="fast timers" />
-            </menu_item_check>
-            <menu_item_check
-             label="Memory"
-             name="Memory"
-             shortcut="control|shift|0"
-             use_mac_ctrl="true">
-                <menu_item_check.on_check
-                 function="Advanced.CheckConsole"
-                 parameter="memory view" />
-                <menu_item_check.on_click
-                 function="Advanced.ToggleConsole"
-                 parameter="memory view" />
             </menu_item_check>
             <menu_item_check
                label="Scene Statistics"
