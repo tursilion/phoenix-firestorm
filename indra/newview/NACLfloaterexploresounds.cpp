@@ -192,7 +192,15 @@ bool NACLFloaterExploreSounds::tick()
 
     mHistoryScroller->clearRows();
 
+    // First pass: apply filters and collapse repeated assets onto a single row.
+    // When collapsing, the surviving entry carries the most recent timestamp of
+    // any instance of that asset, so its displayed age reflects the latest time
+    // the sound actually played rather than the first time we happened to see it.
     std::unordered_set<LLUUID> unique_asset_list;
+    std::unordered_map<LLUUID, size_t> asset_row_map;
+    std::vector<LLSoundHistoryItem> display_items;
+    display_items.reserve(history.size());
+
     for (auto& item : history)
     {
         bool is_avatar = item.mOwnerID == item.mSourceID;
@@ -203,12 +211,6 @@ bool NACLFloaterExploreSounds::tick()
 
         bool is_object = !is_avatar;
         if (is_object && !show_objects)
-        {
-            continue;
-        }
-
-        bool is_repeated_asset = unique_asset_list.contains(item.mAssetID);
-        if (is_repeated_asset && !show_repeated_assets)
         {
             continue;
         }
@@ -225,7 +227,43 @@ bool NACLFloaterExploreSounds::tick()
             continue;
         }
 
+        bool is_repeated_asset = unique_asset_list.contains(item.mAssetID);
+        if (is_repeated_asset && !show_repeated_assets)
+        {
+            // De-duplicating: fold this instance into the row we already kept for
+            // this asset, advancing that row's timestamp if this instance is more
+            // recent, so the surviving row shows how recently it really played.
+            if (auto found = asset_row_map.find(item.mAssetID); found != asset_row_map.end())
+            {
+                LLSoundHistoryItem& kept = display_items[found->second];
+                if (item.mPlaying && !kept.mPlaying)
+                {
+                    // A currently-playing instance always supersedes a stopped one.
+                    kept.mPlaying = true;
+                    kept.mTimeStarted = item.mTimeStarted;
+                    kept.mTimeStopped = item.mTimeStopped;
+                }
+                else if (item.mPlaying)
+                {
+                    kept.mTimeStarted = llmax(kept.mTimeStarted, item.mTimeStarted);
+                }
+                else if (!kept.mPlaying)
+                {
+                    kept.mTimeStopped = llmax(kept.mTimeStopped, item.mTimeStopped);
+                }
+            }
+            continue;
+        }
+
         unique_asset_list.emplace(item.mAssetID);
+        asset_row_map.emplace(item.mAssetID, display_items.size());
+        display_items.emplace_back(item);
+    }
+
+    // Second pass: render the collapsed list.
+    for (const auto& item : display_items)
+    {
+        bool is_avatar = (item.mOwnerID == item.mSourceID);
 
         LLSD element;
         element["id"] = item.mID;

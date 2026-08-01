@@ -1360,24 +1360,51 @@ void LLAudioSource::logSoundStop(const LLUUID& id)
 // static
 void LLAudioSource::pruneSoundLog()
 {
+    // Keep more history than before so short-lived one-shot sounds (e.g.
+    // llTriggerSound) survive long enough to be seen in the Sound Explorer,
+    // even in a busy region.
+    constexpr size_t SOUND_HISTORY_MAX = 512;
+    // Never prune an entry that is still playing or that stopped within the
+    // last few seconds, so a sound can't vanish from the log before anyone has
+    // a chance to notice it.
+    constexpr F64 SOUND_HISTORY_MIN_RETENTION = 10.0; // seconds
+
     if (++sSoundHistoryPruneCounter >= 64)
     {
         sSoundHistoryPruneCounter = 0;
-        while (gSoundHistory.size() > 256)
+
+        const F64 now = LLTimer::getElapsedSeconds();
+        while (gSoundHistory.size() > SOUND_HISTORY_MAX)
         {
-            std::map<LLUUID, LLSoundHistoryItem>::iterator iter = gSoundHistory.begin();
-            std::map<LLUUID, LLSoundHistoryItem>::iterator end = gSoundHistory.end();
-            U64 lowest_time = (U64)(*iter).second.mTimeStopped;
-            LLUUID lowest_id = (*iter).first;
-            for ( ; iter != end; ++iter)
+            std::map<LLUUID, LLSoundHistoryItem>::iterator oldest = gSoundHistory.end();
+            F64 lowest_time = F64_MAX;
+            for (std::map<LLUUID, LLSoundHistoryItem>::iterator iter = gSoundHistory.begin(); iter != gSoundHistory.end(); ++iter)
             {
-                if ((*iter).second.mTimeStopped < lowest_time)
+                // Still-playing entries have mTimeStopped == F64_MAX; never prune them.
+                if (iter->second.mPlaying)
                 {
-                    lowest_time = (U64)(*iter).second.mTimeStopped;
-                    lowest_id = (*iter).first;
+                    continue;
+                }
+                // Protect recently-stopped entries from being pruned.
+                if ((now - iter->second.mTimeStopped) < SOUND_HISTORY_MIN_RETENTION)
+                {
+                    continue;
+                }
+                if (iter->second.mTimeStopped < lowest_time)
+                {
+                    lowest_time = iter->second.mTimeStopped;
+                    oldest = iter;
                 }
             }
-            gSoundHistory.erase(lowest_id);
+
+            // Nothing is eligible for pruning yet (everything is either playing
+            // or too recent); stop here and let the log grow until entries age out.
+            if (oldest == gSoundHistory.end())
+            {
+                break;
+            }
+
+            gSoundHistory.erase(oldest);
         }
     }
 }
