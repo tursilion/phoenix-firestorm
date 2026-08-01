@@ -138,6 +138,7 @@ LLFloaterGesture::LLFloaterGesture(const LLSD& key)
     mCommitCallbackRegistrar.add("Gesture.Action.SaveToCOF", boost::bind(&LLFloaterGesture::addToCurrentOutFit, this));
     mCommitCallbackRegistrar.add("Gesture.Action.CopyToClipboard", boost::bind(&LLFloaterGesture::copyToClipboard, this));
     mCommitCallbackRegistrar.add("Gesture.Action.Rename", boost::bind(&LLFloaterGesture::onRenameSelected, this));
+    mCommitCallbackRegistrar.add("Gesture.Action.ClearHotkey", boost::bind(&LLFloaterGesture::onClearHotkey, this));
     mCommitCallbackRegistrar.add("Gesture.Action.RefreshList", boost::bind(&LLFloaterGesture::refreshForActiveSort, this)); // <FS:PP> FIRE-5646: Option to show only active gestures
 
     mEnableCallbackRegistrar.add("Gesture.EnableAction", boost::bind(&LLFloaterGesture::isActionEnabled, this, _2));
@@ -529,6 +530,19 @@ bool LLFloaterGesture::isActionEnabled(const LLSD& command)
         }
         return false;
     }
+    else if ("clear_hotkey" == command_name)
+    {
+        // Only meaningful for a single, active gesture that actually has a hotkey.
+        if (mGestureList->getAllSelected().size() == 1)
+        {
+            LLMultiGesture* gesture = getSelectedGesture();
+            if (gesture && gesture->mKey != KEY_NONE)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     return true;
 }
 
@@ -774,6 +788,37 @@ void LLFloaterGesture::onGestureListRightClick(LLUICtrl* ctrl, S32 x, S32 y, MAS
         menu->updateParent(LLMenuGL::sMenuContainer);
         LLMenuGL::showPopup(mGestureList, menu, x, y);
     }
+}
+
+LLMultiGesture* LLFloaterGesture::getSelectedGesture()
+{
+    if (mGestureList->getAllSelected().size() != 1)
+    {
+        return NULL;
+    }
+
+    // Active gestures are keyed by the (linked) base item id.
+    const LLUUID base_item_id = gInventory.getLinkedItemID(mGestureList->getCurrentID());
+    const LLGestureMgr::item_map_t& active_gestures = LLGestureMgr::instance().getActiveGestures();
+    LLGestureMgr::item_map_t::const_iterator it = active_gestures.find(base_item_id);
+    return (it != active_gestures.end()) ? it->second : NULL;
+}
+
+void LLFloaterGesture::onClearHotkey()
+{
+    LLMultiGesture* gesture = getSelectedGesture();
+    if (!gesture || gesture->mKey == KEY_NONE)
+    {
+        return;
+    }
+
+    gesture->mKey = KEY_NONE;
+    gesture->mMask = MASK_NONE;
+
+    // Persist so the cleared hotkey doesn't return on next login. This also
+    // triggers a gesture-manager reload, which refreshes the list.
+    const LLUUID base_item_id = gInventory.getLinkedItemID(mGestureList->getCurrentID());
+    LLPreviewGesture::saveGestureToAgentInventory(base_item_id, gesture);
 }
 
 void LLFloaterGesture::onCommitList()

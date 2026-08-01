@@ -95,6 +95,9 @@ private:
     void onClickPlay();
     void onClickRight();
     void onGestureListRightClick(LLUICtrl* ctrl, S32 x, S32 y, MASK mask);
+    void onClearHotkey();
+    // Returns the loaded gesture for the single selected row, or NULL.
+    LLMultiGesture* getSelectedGesture();
     void onClickNew();
     void onCommitList();
     void onCopyPasteAction(const LLSD& command);

@@ -50,6 +50,10 @@ public:
     LLPreviewGesture(const LLSD& key);
     virtual ~LLPreviewGesture();
 
+    // Re-upload the (modified) gesture as the asset for agent-inventory item_id.
+    // Exposed so other UI (e.g. the gesture list) can persist hotkey changes.
+    static void saveGestureToAgentInventory(const LLUUID& item_id, LLMultiGesture* gesture);
+
     // LLView
     /*virtual*/ void draw();
     /*virtual*/ bool handleKeyHere(KEY key, MASK mask);
@@ -138,8 +142,6 @@ protected:
     // When this gesture is given a hotkey, clear that same hotkey from any other
     // active gesture (and persist the change) so a key can't fire the wrong one.
     void clearConflictingHotkeys(KEY key, MASK mask);
-    // Re-upload the (modified) gesture as the asset for agent-inventory item_id.
-    static void saveGestureToAgentInventory(const LLUUID& item_id, LLMultiGesture* gesture);
 private:
     // LLPreview contains mDescEditor
     LLLineEditor*   mTriggerEditor;
