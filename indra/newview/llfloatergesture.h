@@ -122,7 +122,7 @@ private:
 
      // <FS:ND> Save items already created, then just change them if needed.
     std::map< LLUUID, LLScrollListItem * > mItems;
-    bool updateItem( LLUUID const&, LLSD const& );
+    bool updateItem( LLUUID const&, LLSD const&, bool has_gesture_data );
     // </FS:ND>
 };
 

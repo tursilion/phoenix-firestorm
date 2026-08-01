@@ -451,7 +451,7 @@ void LLFloaterGesture::addGesture(const LLUUID& item_id , LLMultiGesture* gestur
 
     LLScrollListItem* sl_item(0);
 
-    if( !updateItem( item_id, element ) )
+    if( !updateItem( item_id, element, gesture != NULL ) )
         sl_item = list->addElement(element, ADD_BOTTOM);
 
     if(sl_item)
@@ -894,7 +894,7 @@ void LLFloaterGesture::playGesture(LLUUID item_id)
 #define UI_COL_KEY 3
 #define UI_COL_SHORTCUT 4
 
-bool LLFloaterGesture::updateItem( LLUUID const &aItem, LLSD const &aData )
+bool LLFloaterGesture::updateItem( LLUUID const &aItem, LLSD const &aData, bool has_gesture_data )
 {
     std::map< LLUUID, LLScrollListItem * >::iterator itr = mItems.find( aItem );
 
@@ -909,19 +909,30 @@ bool LLFloaterGesture::updateItem( LLUUID const &aItem, LLSD const &aData )
     const std::string sDummyShortcut = "---";
     const std::string sDummyKey = "~~~";
 
-    if( aData[ "columns" ][ COL_NAME ][ "value" ] != "" )
-        pItem->getColumn( UI_COL_NAME )->setValue( aData[ "columns" ][ COL_NAME ][ "value" ] );
-
-    if( aData[ "columns" ][ COL_TRIGGER ][ "value" ] != "" )
-        pItem->getColumn( UI_COL_TRIGGER )->setValue( aData[ "columns" ][ COL_TRIGGER ][ "value" ] );
-
-    if( aData[ "columns" ][ COL_SHORTCUT ][ "value" ] != sDummyShortcut )
-        pItem->getColumn( UI_COL_SHORTCUT )->setValue( aData[ "columns" ][ COL_SHORTCUT ][ "value" ] );
-
-    if( aData[ "columns" ][ COL_KEY ][ "value" ] != sDummyKey )
-        pItem->getColumn( UI_COL_KEY )->setValue( aData[ "columns" ][ COL_KEY ][ "value" ] );
-
     pItem->getColumn( UI_COL_NAME )->setValue( aData[ "columns" ][ COL_NAME ][ "value" ] );
+
+    if( has_gesture_data )
+    {
+        // The gesture is loaded, so these values are authoritative. Apply them
+        // verbatim - including a *cleared* hotkey ("---"/"~~~") - so that adding,
+        // changing, or clearing a hotkey is reflected in the list immediately.
+        pItem->getColumn( UI_COL_TRIGGER )->setValue( aData[ "columns" ][ COL_TRIGGER ][ "value" ] );
+        pItem->getColumn( UI_COL_SHORTCUT )->setValue( aData[ "columns" ][ COL_SHORTCUT ][ "value" ] );
+        pItem->getColumn( UI_COL_KEY )->setValue( aData[ "columns" ][ COL_KEY ][ "value" ] );
+    }
+    else
+    {
+        // The gesture hasn't loaded yet, so incoming values may just be loading
+        // placeholders. Don't clobber real values we may already be showing.
+        if( aData[ "columns" ][ COL_TRIGGER ][ "value" ] != "" )
+            pItem->getColumn( UI_COL_TRIGGER )->setValue( aData[ "columns" ][ COL_TRIGGER ][ "value" ] );
+
+        if( aData[ "columns" ][ COL_SHORTCUT ][ "value" ] != sDummyShortcut )
+            pItem->getColumn( UI_COL_SHORTCUT )->setValue( aData[ "columns" ][ COL_SHORTCUT ][ "value" ] );
+
+        if( aData[ "columns" ][ COL_KEY ][ "value" ] != sDummyKey )
+            pItem->getColumn( UI_COL_KEY )->setValue( aData[ "columns" ][ COL_KEY ][ "value" ] );
+    }
 
     bool is_gesture_active = LLGestureMgr::getInstance()->isGestureActive(aItem);
     LLFontGL::StyleFlags oStyle = is_gesture_active ? LLFontGL::BOLD : LLFontGL::NORMAL;
